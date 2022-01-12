@@ -3,26 +3,47 @@
     const covid = await data.json();
     drawChart(covid);
     drawTable(covid);
+
+
+    $('#verdetalle').on('click', function() {
+
+        alert("Llegué")
+
+        $("#exampleModal .modal-body").html();
+        $("#exampleModal").modal("show");
+
+    });
+
 })()
 
+let filterArrayCovid;
 
 function drawChart(covid) {
 
+    filterArrayCovid = covid.data.filter(pais => pais.deaths > 100000);
 
-    var chart = new CanvasJS.Chart("chartContainer", {
+    let covidConfirmados = new Array();
+    let covidMuertos = new Array();
+
+    for (pais of filterArrayCovid) {
+        covidConfirmados.push({ label: pais.location, y: pais.confirmed });
+        covidMuertos.push({ label: pais.location, y: pais.deaths });
+    }
+
+    let chart = new CanvasJS.Chart("chartContainer", {
         animationEnabled: true,
         title: {
-            text: "Crude Oil Reserves vs Production, 2016"
+            text: "Paises con Covid19"
         },
         axisY: {
-            title: "Billions of Barrels",
+            title: "Casos de covid Confirmados",
             titleFontColor: "#4F81BC",
             lineColor: "#4F81BC",
             labelFontColor: "#4F81BC",
             tickColor: "#4F81BC"
         },
         axisY2: {
-            title: "Millions of Barrels/day",
+            title: "Muertos por Covid",
             titleFontColor: "#C0504E",
             lineColor: "#C0504E",
             labelFontColor: "#C0504E",
@@ -37,35 +58,22 @@ function drawChart(covid) {
         },
         data: [{
                 type: "column",
-                name: "Proven Oil Reserves (bn)",
-                legendText: "Proven Oil Reserves",
+                name: "confirmados",
+                legendText: "confirmados",
                 showInLegend: true,
-                dataPoints: [
-                    { label: "Saudi", y: 266.21 },
-                    { label: "Venezuela", y: 302.25 },
-                    { label: "Iran", y: 157.20 },
-                    { label: "Iraq", y: 148.77 },
-                    { label: "Kuwait", y: 101.50 },
-                    { label: "UAE", y: 97.8 }
-                ]
+                dataPoints: covidConfirmados
             },
             {
                 type: "column",
-                name: "Oil Production (million/day)",
-                legendText: "Oil Production",
+                name: "muertos",
+                legendText: "muertos",
                 axisYType: "secondary",
                 showInLegend: true,
-                dataPoints: [
-                    { label: "Saudi", y: 10.46 },
-                    { label: "Venezuela", y: 2.27 },
-                    { label: "Iran", y: 3.99 },
-                    { label: "Iraq", y: 4.45 },
-                    { label: "Kuwait", y: 2.92 },
-                    { label: "UAE", y: 3.1 }
-                ]
+                dataPoints: covidMuertos
             }
         ]
     });
+
     chart.render();
 
     function toggleDataSeries(e) {
@@ -76,107 +84,6 @@ function drawChart(covid) {
         }
         chart.render();
     }
-
-    //     for (muestraCovid of covid.data) {
-    //         if (muestraCovid.deaths >= 10000) {
-    //             document.write(muestraCovid.location + "<br>")
-    //         }
-    //     }
-    //     // }
-
-    //     var chart = new CanvasJS.Chart("chartContainer", {
-    //         animationEnabled: true,
-    //         title: {
-    //             text: "Crude Oil Reserves vs Production, 2016"
-    //         },
-    //         axisY: {
-    //             title: "Billions of Barrels",
-    //             titleFontColor: "#4F81BC",
-    //             lineColor: "#4F81BC",
-    //             labelFontColor: "#4F81BC",
-    //             tickColor: "#4F81BC"
-    //         },
-    //         axisY2: {
-    //             title: "Millions of Barrels/day",
-    //             titleFontColor: "#C0504E",
-    //             lineColor: "#C0504E",
-    //             labelFontColor: "#C0504E",
-    //             tickColor: "#C0504E"
-    //         },
-    //         toolTip: {
-    //             shared: true
-    //         },
-    //         legend: {
-    //             cursor: "pointer",
-    //         },
-    //         data: [{
-    //                 type: "column",
-    //                 name: "Proven Oil Reserves (bn)",
-    //                 legendText: "Proven Oil Reserves",
-    //                 showInLegend: true,
-    //                 dataPoints: [{
-    //                         label: "Saudi",
-    //                         y: 266.21
-    //                     },
-    //                     {
-    //                         label: "Venezuela",
-    //                         y: 302.25
-    //                     },
-    //                     {
-    //                         label: "Iran",
-    //                         y: 157.20
-    //                     },
-    //                     {
-    //                         label: "Iraq",
-    //                         y: 148.77
-    //                     },
-    //                     {
-    //                         label: "Kuwait",
-    //                         y: 101.50
-    //                     },
-    //                     {
-    //                         label: "UAE",
-    //                         y: 97.8
-    //                     }
-    //                 ]
-    //             },
-    //             {
-    //                 type: "column",
-    //                 name: "Oil Production (million/day)",
-    //                 legendText: "Oil Production",
-    //                 axisYType: "secondary",
-    //                 showInLegend: true,
-    //                 dataPoints: [{
-    //                         label: "Saudi",
-    //                         y: 10.46
-    //                     },
-    //                     {
-    //                         label: "Venezuela",
-    //                         y: 2.27
-    //                     },
-    //                     {
-    //                         label: "Iran",
-    //                         y: 3.99
-    //                     },
-    //                     {
-    //                         label: "Iraq",
-    //                         y: 4.45
-    //                     },
-    //                     {
-    //                         label: "Kuwait",
-    //                         y: 2.92
-    //                     },
-    //                     {
-    //                         label: "UAE",
-    //                         y: 3.1
-    //                     }
-    //                 ]
-    //             }
-    //         ]
-    //     });
-
-    //     chart.render();
-
 
 }
 
