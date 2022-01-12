@@ -5,16 +5,17 @@
     drawTable(covid);
 
 
-    $('#verdetalle').on('click', function() {
-
-        alert("Llegué")
-
-        $("#exampleModal .modal-body").html();
-        $("#exampleModal").modal("show");
-
-    });
 
 })()
+
+$('#verdetalle').on('click', function() {
+
+    alert("Llegué");
+
+    $("#exampleModal .modal-body").html("<h1>Hola, soy un modal</h1>");
+    $("#exampleModal").modal("show");
+
+});
 
 let filterArrayCovid;
 
