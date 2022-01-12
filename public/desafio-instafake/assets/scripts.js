@@ -17,19 +17,11 @@ $("#js-form").on("submit", async function(ev) {
     });
 
     const jwt = await data.json()
-
     token = jwt.token;
+    localStorage.setItem("token", token);
 
-    const data2 = await fetch('/api/photos?limit=10', {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    })
+    getPhotos(token);
 
-    photos = await data2.json();
-
-    // console.log(photos)
-    dibujar(photos.data)
 });
 
 function dibujar(photos) {
@@ -49,9 +41,35 @@ function dibujar(photos) {
     }
 }
 
-$("#borrar").on("click", async function(ev) {
+$("#salir").on("click", async function(ev) {
     ev.preventDefault();
 
-    $("#form-principal").removeClass("d-block").addClass("d-none");
-    $("#images").removeClass("d-none").addClass("d-block");
+    $("#js-form").removeClass("d-none").addClass("d-block");
+    $("#images").removeClass("d-block").addClass("d-none");
+    localStorage.removeItem("token");
 });
+
+(function() {
+
+    if (localStorage.getItem("token")) {
+        const token = localStorage.getItem("token")
+        getPhotos(token)
+    }
+})() //IIFE
+
+
+
+async function getPhotos(token) {
+    const data2 = await fetch('/api/photos?limit=10', {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    photos = await data2.json();
+
+    $("#js-form").addClass("d-none").removeClass("d-block");
+    $("#images").removeClass("d-none").addClass("d-block");
+
+    dibujar(photos.data)
+}
