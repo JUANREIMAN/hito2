@@ -3,7 +3,7 @@ $("#form-login").on("submit", async function(ev) {
 
     const email = $("#exampleInputEmail1").val();
     const password = $("#exampleInputPassword1").val();
-    console.log(email);
+
     const data = await fetch("/api/login", {
 
         method: 'POST',
@@ -20,6 +20,7 @@ $("#form-login").on("submit", async function(ev) {
 
     init(token);
 
+    console.log(token);
 });
 
 
@@ -31,8 +32,14 @@ async function init(token) {
     // drawChart(covid);
 
     $("#form-login").addClass("d-none").removeClass("d-block");
-    $(".table").addClass("d-block").removeClass("d-none");
-    $("#idGrafico").addClass("d-block").removeClass("d-none");
-    $("#salir").addClass("d-block").removeClass("d-none");
+    // $("#idGrafico").addClass("d-block").removeClass("d-none");
+    // $("#salir").addClass("d-block").removeClass("d-none");
 
 }
+
+(async function() {
+    const token = localStorage.getItem("token");
+    if (token) {
+        init(token);
+    }
+})()
