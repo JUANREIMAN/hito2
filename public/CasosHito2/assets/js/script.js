@@ -210,8 +210,6 @@ $('#home').on('click', async function(ev) {
     $(".table").addClass("d-block").removeClass("d-none");
     $("#idGrafico").addClass("d-block").removeClass("d-none");
 
-    alert("Estoy en home")
-
 });
 
 
@@ -223,4 +221,32 @@ $('#situacionChile').on('click', async function(ev) {
 
     alert("Estoy en situacion de chile");
 
+    // const data = await fetch(`/api/confirmed`);
+    // const data2 = await data.json();
+
+    // console.log(data2);
+
 });
+
+const getChileInfo = () => {
+    const token = localStorage.getItem("token");
+    Promise.all([
+            'http://localhost:3000/api/confirmed',
+            'http://localhost:3000/api/deaths',
+            'http://localhost:3000/api/recovered'
+        ].map(url =>
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(resp => resp.json())
+        )).then(response => {
+            console.log(response);
+        })
+        .catch(err => {
+            console.error(err)
+            localStorage.clear()
+            toggleLinks()
+        })
+}
