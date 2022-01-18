@@ -3,7 +3,6 @@ $("#form-login").on("submit", async function(ev) {
 
     const email = $("#exampleInputEmail1").val();
     const password = $("#exampleInputPassword1").val();
-    console.log(email);
     const data = await fetch("/api/login", {
 
         method: 'POST',
@@ -142,10 +141,7 @@ async function GraficoModal(ind) {
     const data = await fetch(`/api/countries/${ArrayPaises[ind]}`);
     const data2 = await data.json();
 
-    console.log(data2.data);
-
     $("#exampleModal").modal("show");
-
 
     let chart = new CanvasJS.Chart("chartContainerModal", {
         animationEnabled: true,
@@ -193,7 +189,6 @@ async function GraficoModal(ind) {
 
 }
 
-
 $('#cerrarSesion').on('click', async function(ev) {
     ev.preventDefault();
     $('#exampleInputEmail1').val("");
@@ -224,8 +219,6 @@ $('#situacionChile').on('click', async function(ev) {
     $(".table").addClass("d-none").removeClass("d-block");
     $("#idGrafico").addClass("d-none").removeClass("d-block");
     $("#chartContainerChile").addClass("d-block").removeClass("d-none");
-    // const data = await fetch(`/api/confirmed`);
-    // const data2 = await data.json();
 
     getChileInfo();
 });
@@ -267,8 +260,6 @@ const getChileInfo = async() => {
 
     for (let i = 0; i < data2.data.length; i += 10) {
 
-
-
         let fecha = data2.data[i].date.split("/");
         fecha = fecha.map(parseInt);
         fecha = new Date(data2.data[i].date);
@@ -276,11 +267,6 @@ const getChileInfo = async() => {
         deaths.push({ x: fecha, y: data4.data[i].total });
         recovered.push({ x: fecha, y: data6.data[i].total });
     }
-
-    console.log(confirmed);
-    console.log(deaths);
-    console.log(recovered);
-
 
     drawChartChile(confirmed, deaths, recovered);
 
