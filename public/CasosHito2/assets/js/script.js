@@ -3,7 +3,6 @@ $("#form-login").on("submit", async function(ev) {
 
     const email = $("#exampleInputEmail1").val();
     const password = $("#exampleInputPassword1").val();
-    console.log(email);
     const data = await fetch("/api/login", {
 
         method: 'POST',
@@ -33,6 +32,7 @@ async function init(token) {
     $(".table").addClass("d-block").removeClass("d-none");
     $("#idGrafico").addClass("d-block").removeClass("d-none");
     $("#navHito").addClass("d-block").removeClass("d-none");
+    $("#chartContainerChile").addClass("d-none").removeClass("d-block");
 
 }
 
@@ -115,6 +115,7 @@ function drawChart(covid) {
 }
 
 const ArrayPaises = [];
+$('.table').html("");
 
 function drawTable(datos) {
     let i = 0;
@@ -140,10 +141,7 @@ async function GraficoModal(ind) {
     const data = await fetch(`/api/countries/${ArrayPaises[ind]}`);
     const data2 = await data.json();
 
-    console.log(data2.data);
-
     $("#exampleModal").modal("show");
-
 
     let chart = new CanvasJS.Chart("chartContainerModal", {
         animationEnabled: true,
@@ -200,6 +198,7 @@ $('#cerrarSesion').on('click', async function(ev) {
     $(".table").addClass("d-none").removeClass("d-block");
     $("#idGrafico").addClass("d-none").removeClass("d-block");
     $("#navHito").addClass("d-none").removeClass("d-block");
+    $("#chartContainerChile").addClass("d-none").removeClass("d-block");
     localStorage.removeItem("token");
 
 });
@@ -209,8 +208,7 @@ $('#home').on('click', async function(ev) {
 
     $(".table").addClass("d-block").removeClass("d-none");
     $("#idGrafico").addClass("d-block").removeClass("d-none");
-
-    alert("Estoy en home")
+    $("#chartContainerChile").addClass("d-none").removeClass("d-block");
 
 });
 
@@ -220,7 +218,131 @@ $('#situacionChile').on('click', async function(ev) {
 
     $(".table").addClass("d-none").removeClass("d-block");
     $("#idGrafico").addClass("d-none").removeClass("d-block");
+    $("#chartContainerChile").addClass("d-block").removeClass("d-none");
 
-    alert("Estoy en situacion de chile");
-
+    getChileInfo();
 });
+
+const getChileInfo = async() => {
+    const token = localStorage.getItem("token");
+
+    const data = await fetch(`/api/confirmed`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+
+    });
+
+    const data2 = await data.json();
+
+
+    const data3 = await fetch(`/api/deaths`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+
+    });
+
+    const data4 = await data3.json();
+
+
+    const data5 = await fetch(`/api/recovered`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+
+    });
+
+    const data6 = await data5.json();
+
+
+    const confirmed = [];
+    const deaths = [];
+    const recovered = [];
+
+
+    for (let i = 0; i < data2.data.length; i += 10) {
+
+        let fecha = data2.data[i].date.split("/");
+        fecha = fecha.map(parseInt);
+        fecha = new Date(data2.data[i].date);
+        confirmed.push({ x: fecha, y: data2.data[i].total });
+        deaths.push({ x: fecha, y: data4.data[i].total });
+        recovered.push({ x: fecha, y: data6.data[i].total });
+    }
+
+    drawChartChile(confirmed, deaths, recovered);
+
+
+    function drawChartChile(confirmed, deaths, recovered) {
+
+        let chart = new CanvasJS.Chart("chartContainerChile", {
+
+            animationEnabled: true,
+            theme: "light2",
+            title: {
+                text: "Covid en Chile"
+            },
+            axisX: {
+                valueFormatString: "DD MMM, YYYY",
+                crosshair: {
+                    enabled: true,
+                    snapToDataPoint: true
+                }
+            },
+            axisY: {
+                title: "Casos de covid en chile",
+                includeZero: true,
+                crosshair: {
+                    enabled: true
+                }
+            },
+            toolTip: {
+                shared: true
+            },
+            legend: {
+                cursor: "pointer",
+                verticalAlign: "bottom",
+                horizontalAlign: "left",
+                dockInsidePlotArea: true,
+                itemclick: toogleDataSeries
+            },
+            data: [{
+                    type: "line",
+                    showInLegend: true,
+                    name: "confirmados",
+                    markerType: "square",
+                    // xValueFormatString: "dd/mm/yyyy",
+                    xValueFormatString: "DD MMM, YYYY",
+                    color: "#5C78BD",
+                    dataPoints: confirmed
+                }, {
+                    type: "line",
+                    showInLegend: true,
+                    name: "muertos",
+                    markerType: "square",
+                    // xValueFormatString: "DD MMM, YYYY",
+                    xValueFormatString: "DD MMM, YYYY",
+                    color: "#F6F315",
+                    dataPoints: deaths
+                },
+                {
+                    type: "line",
+                    showInLegend: true,
+                    name: "recuperados",
+                    dataPoints: recovered
+                }
+            ]
+        });
+
+        chart.render();
+
+        function toogleDataSeries(e) {
+            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+            } else {
+                e.dataSeries.visible = true;
+            }
+            chart.render();
+        }
+
+    }
+
+}
