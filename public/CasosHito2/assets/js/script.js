@@ -267,9 +267,11 @@ const getChileInfo = async() => {
 
     for (let i = 0; i < data2.data.length; i += 10) {
 
+
+
         let fecha = data2.data[i].date.split("/");
         fecha = fecha.map(parseInt);
-        fecha = new Date(fecha[2], fecha[0] - 1, fecha[1]);
+        fecha = new Date(data2.data[i].date);
         confirmed.push({ x: fecha, y: data2.data[i].total });
         deaths.push({ x: fecha, y: data4.data[i].total });
         recovered.push({ x: fecha, y: data6.data[i].total });
@@ -339,7 +341,6 @@ const getChileInfo = async() => {
                     type: "line",
                     showInLegend: true,
                     name: "recuperados",
-                    lineDashType: "dash",
                     dataPoints: recovered
                 }
             ]
